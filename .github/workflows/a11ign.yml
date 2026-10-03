@@ -1,0 +1,28 @@
+name: a11ign
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  a11ign:
+    runs-on: windows-2022        # NVDA is Windows-only; the action fails fast anywhere else
+    timeout-minutes: 20          # a run that will not finish says so here, not after GitHub's own default
+    permissions:
+      contents: read
+      pull-requests: write       # for the PR comment below; omit it and the report still runs, only quieter
+    steps:
+      - uses: actions/checkout@v4
+      - uses: a11ign/a11ign@v0.1.0
+        id: a11ign
+        with:
+          url: https://www.gov.uk/
+          task: Find out how to renew a passport
+      - uses: actions/upload-artifact@v4
+        if: always() && steps.a11ign.outputs.result-json != ''
+        with:
+          name: a11ign-result
+          path: |
+            ${{ steps.a11ign.outputs.result-json }}
+            ${{ steps.a11ign.outputs.summary-md }}
+          if-no-files-found: warn
