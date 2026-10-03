@@ -1,0 +1,8 @@
+# The pin refresh is Dependabot, not a stored token: a workflow cannot commit a change under
+# .github/workflows with its own GITHUB_TOKEN, and this repository holds no secret of any kind.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: daily
