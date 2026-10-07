@@ -33,9 +33,9 @@ jobs:
         run: |
           set -euo pipefail
           version=$(npm view a11ign dist-tags.latest)
-          tag_sha=$(git ls-remote https://github.com/a11ign/a11ign "refs/tags/v${version}^{}" | cut -f1)
-          [ -n "$tag_sha" ] || tag_sha=$(git ls-remote https://github.com/a11ign/a11ign "refs/tags/v${version}" | cut -f1)
-          [ -n "$tag_sha" ] || { echo "::error::no release tag v${version} on https://github.com/a11ign/a11ign"; exit 1; }
+          tag_sha=$(git ls-remote https://github.com/a11ign/a11ign "refs/tags/a11ign@${version}^{}" | cut -f1)
+          [ -n "$tag_sha" ] || tag_sha=$(git ls-remote https://github.com/a11ign/a11ign "refs/tags/a11ign@${version}" | cut -f1)
+          [ -n "$tag_sha" ] || { echo "::error::no release tag a11ign@${version} on https://github.com/a11ign/a11ign"; exit 1; }
           title="outsider v${version} ${tag_sha}"
           # A run counts as answered once it is unfinished or ended success/failure: a cancelled one never answered,
           # and a version already red must not be re-run every hour on a windows runner.
@@ -50,7 +50,7 @@ jobs:
     if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4   # this repository's own workflow file, which holds the one copy of the pin
+      - uses: actions/checkout@v7   # this repository's own workflow file, which holds the one copy of the pin
         with:
           persist-credentials: false
       - name: Refuse a run whose pin is not the release it is named for
@@ -60,9 +60,9 @@ jobs:
         run: |
           set -euo pipefail
           version="$VERSION"
-          tag_sha=$(git ls-remote https://github.com/a11ign/a11ign "refs/tags/v${version}^{}" | cut -f1)
-          [ -n "$tag_sha" ] || tag_sha=$(git ls-remote https://github.com/a11ign/a11ign "refs/tags/v${version}" | cut -f1)
-          [ -n "$tag_sha" ] || { echo "::error::no release tag v${version} on https://github.com/a11ign/a11ign"; exit 1; }
+          tag_sha=$(git ls-remote https://github.com/a11ign/a11ign "refs/tags/a11ign@${version}^{}" | cut -f1)
+          [ -n "$tag_sha" ] || tag_sha=$(git ls-remote https://github.com/a11ign/a11ign "refs/tags/a11ign@${version}" | cut -f1)
+          [ -n "$tag_sha" ] || { echo "::error::no release tag a11ign@${version} on https://github.com/a11ign/a11ign"; exit 1; }
           workflow_file="${GITHUB_WORKFLOW_REF#"${GITHUB_REPOSITORY}/"}"
           workflow_file="${workflow_file%%@*}"
           pinned=$(sed -nE 's#^[[:space:]]*(- )?uses:[[:space:]]*a11ign/a11ign@([0-9a-f]{40})([[:space:]].*)?$#\2#p' "$workflow_file")
@@ -91,7 +91,7 @@ jobs:
       contents: read
       pull-requests: write         # for the PR comment below; omit it and the report still runs, only quieter
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: a11ign/a11ign@b373d1d7d0f830175bbef30decee214ea64594b7 # v0.1.0
         # Pinned to v0.1.0, the first tagged release. Use the full commit SHA instead if your CI must
         # not move even across a release.
@@ -101,7 +101,7 @@ jobs:
           task: Find the main navigation and reach the survey.
       # Keep the evidence: the full result, including the transcript behind every finding. Guarded on the
       # output existing, so a run that failed does not also fail the upload.
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always() && steps.a11ign.outputs.result-json != ''
         with:
           name: a11ign-result
@@ -114,7 +114,7 @@ jobs:
     if: ${{ !cancelled() && github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v7
         if: needs.a11y.result == 'success'
         with:
           name: a11ign-result
