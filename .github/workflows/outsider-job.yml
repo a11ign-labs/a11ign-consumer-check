@@ -92,7 +92,7 @@ jobs:
       pull-requests: write         # for the PR comment below; omit it and the report still runs, only quieter
     steps:
       - uses: actions/checkout@v7
-      - uses: a11ign/a11ign@295477423a774945ec63d0a89fe6e50256f59cb0 # v0.10.18
+      - uses: a11ign/a11ign@1292aea00e06b50bdba79c6e2d1ac4c9c3c48d42 # v0.10.19
         # Pinned to the full 40-character commit of release 0.10.15, so your CI does not move when a newer
         # one is published. `v0.1.0` predates the `summary-md` output used below.
         id: a11ign
